@@ -63,6 +63,25 @@ int parse_command(char *str, char *argv[]){
 
 void ls_command(int n, char *argv[]){
     fio_printf(1,"\r\n"); 
+ //save the command to the host
+int handle;
+int error;
+ handle = host_action(SYS_OPEN, "output/syslog", 8);
+    if(handle == -1) {
+        fio_printf(1, "Open file error!\n\r");
+        return;
+    }
+
+    char *buffer = "use ls command\n";
+    error = host_action(SYS_WRITE, handle, buffer, strlen(buffer));
+    if(error != 0) {
+        fio_printf(1, "Write file error! Remain %d bytes didn't write in the file.\n\r", error);
+        host_action(SYS_CLOSE, handle);
+        return;
+    }
+ //save the command to the host
+
+    host_action(SYS_CLOSE, handle);
     int dir;
     if(n == 0){
         dir = fs_opendir("");
@@ -100,9 +119,12 @@ int filedump(const char *filename){
 void ps_command(int n, char *argv[]){
 	signed char buf[1024];
 	vTaskList(buf);
+
         fio_printf(1, "\n\rName          State   Priority  Stack  Num\n\r");
         fio_printf(1, "*******************************************\n\r");
-	fio_printf(1, "%s\r\n", buf + 2);	
+	//fio_printf(1, "%s\r\n", buf + 2);	
+	fio_printf(1, "%s\r\n", buf );
+
 }
 
 void cat_command(int n, char *argv[]){
@@ -159,31 +181,40 @@ void help_command(int n,char *argv[]){
 		fio_printf(1, "%s - %s\r\n", cl[i].name, cl[i].desc);
 	}
 }
-
+int StrToInt( char *str)
+{
+    int n = 0;
+    while (*str != 0)
+    {
+        int c = *str - '0';
+        n = n * 10 + c;
+        ++str;
+    }
+    return n;
+}
 void test_command(int n, char *argv[]) {
-    int handle;
-    int error;
-
-    fio_printf(1, "\r\n");
-    
-    handle = host_action(SYS_SYSTEM, "mkdir -p output");
-    handle = host_action(SYS_SYSTEM, "touch output/syslog");
-
-    handle = host_action(SYS_OPEN, "output/syslog", 8);
-    if(handle == -1) {
-        fio_printf(1, "Open file error!\n\r");
-        return;
-    }
-
-    char *buffer = "Test host_write function which can write data to output/syslog\n";
-    error = host_action(SYS_WRITE, handle, (void *)buffer, strlen(buffer));
-    if(error != 0) {
-        fio_printf(1, "Write file error! Remain %d bytes didn't write in the file.\n\r", error);
-        host_action(SYS_CLOSE, handle);
-        return;
-    }
-
-    host_action(SYS_CLOSE, handle);
+   	if(n==1){
+		fio_printf(2, "\r\nUsage: test <number>\r\n");
+		return;
+	}
+	int next,first=0,second=1,c;
+	int input=StrToInt(argv[1]);
+fio_printf(1,"\r\n");	
+	for ( c = 0 ; c < input ; c++ )
+	
+   {
+      if ( c <= 1 )
+         next = c;
+      else
+      {
+         next = first + second;
+         first = second;
+         second = next;
+      }
+      fio_printf(1,"%d\r\n",next);
+   }
+ 
+			
 }
 
 void _command(int n, char *argv[]){
@@ -201,3 +232,5 @@ cmdfunc *do_command(const char *cmd){
 	}
 	return NULL;	
 }
+
+
