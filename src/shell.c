@@ -25,7 +25,7 @@ void host_command(int, char **);
 void mmtest_command(int, char **);
 void test_command(int, char **);
 void _command(int, char **);
-
+void new_command(int,char**);
 #define MKCL(n, d) {.name=#n, .fptr=n ## _command, .desc=d}
 
 cmdlist cl[]={
@@ -38,6 +38,8 @@ cmdlist cl[]={
 	MKCL(help, "help"),
 	MKCL(test, "test new function"),
 	MKCL(, ""),
+	MKCL(new,"create new task")
+	
 };
 
 int parse_command(char *str, char *argv[]){
@@ -62,34 +64,34 @@ int parse_command(char *str, char *argv[]){
 }
 
 void ls_command(int n, char *argv[]){
-    fio_printf(1,"\r\n"); 
+    	fio_printf(1,"\r\n"); 
  //save the command to the host
-int handle;
-int error;
- handle = host_action(SYS_OPEN, "output/syslog", 8);
-    if(handle == -1) {
-        fio_printf(1, "Open file error!\n\r");
-        return;
-    }
+	int handle;
+	int error;
+ 	handle = host_action(SYS_OPEN, "output/syslog", 8);
+    	if(handle == -1) {
+        	fio_printf(1, "Open file error!\n\r");
+        	return;
+   	 }
 
-    char *buffer = "use ls command\n";
-    error = host_action(SYS_WRITE, handle, buffer, strlen(buffer));
-    if(error != 0) {
-        fio_printf(1, "Write file error! Remain %d bytes didn't write in the file.\n\r", error);
-        host_action(SYS_CLOSE, handle);
-        return;
-    }
+    	char *buffer = "use ls command\n";
+    	error = host_action(SYS_WRITE, handle, buffer, strlen(buffer));
+    	if(error != 0) {
+       	 	fio_printf(1, "Write file error! Remain %d bytes didn't write in the file.\n\r", error);
+       	 	host_action(SYS_CLOSE, handle);
+        	return;
+    	}
  //save the command to the host
 
-    host_action(SYS_CLOSE, handle);
-    int dir;
-    if(n == 0){
-        dir = fs_opendir("");
-    }else if(n == 1){
-        dir = fs_opendir(argv[1]);
-        //if(dir == )
-    }else{
-        fio_printf(1, "Too many argument!\r\n");
+    	host_action(SYS_CLOSE, handle);
+    	int dir;
+    	if(n == 0){
+       		 dir = fs_opendir("");
+    	}else if(n == 1){
+        	dir = fs_opendir(argv[1]);
+        	//if(dir == )
+    	}else{
+        	fio_printf(1, "Too many argument!\r\n");
         return;
     }
 (void)dir;   // Use dir
@@ -121,8 +123,7 @@ void ps_command(int n, char *argv[]){
 	vTaskList(buf);
 
         fio_printf(1, "\n\rName          State   Priority  Stack  Num\n\r");
-        fio_printf(1, "*******************************************\n\r");
-	//fio_printf(1, "%s\r\n", buf + 2);	
+        fio_printf(1, "*******************************************\n\r");	
 	fio_printf(1, "%s\r\n", buf );
 
 }
@@ -173,13 +174,11 @@ void host_command(int n, char *argv[]){
         fio_printf(2, "\r\nUsage: host 'command'\r\n");
     }
 }
-
-void help_command(int n,char *argv[]){
-	int i;
-	fio_printf(1, "\r\n");
-	for(i = 0;i < sizeof(cl)/sizeof(cl[0]) - 1; ++i){
-		fio_printf(1, "%s - %s\r\n", cl[i].name, cl[i].desc);
-	}
+void mytest1(void *pvParameters)
+{		
+	for (;;){	
+		vTaskDelay(1000);
+		}
 }
 int StrToInt( char *str)
 {
@@ -192,27 +191,48 @@ int StrToInt( char *str)
     }
     return n;
 }
+void new_command(int n, char *argv[]){
+/* Create a task to mytest1. */
+	if(n==1){
+		fio_printf(2, "\r\nUsage: new <priority>\r\n");
+		return;
+	}
+	int input=StrToInt(argv[1]);
+	xTaskCreate(mytest1,
+	            (signed portCHAR *) "mytest1",
+	            512 /* stack size */, NULL, tskIDLE_PRIORITY + input, NULL);
+        fio_printf(2, "\r\ncreate new task:mytest1'\r\n");
+    
+}
+void help_command(int n,char *argv[]){
+	int i;
+	fio_printf(1, "\r\n");
+	for(i = 0;i < sizeof(cl)/sizeof(cl[0]) - 1; ++i){
+		fio_printf(1, "%s - %s\r\n", cl[i].name, cl[i].desc);
+	}
+}
+
 void test_command(int n, char *argv[]) {
    	if(n==1){
 		fio_printf(2, "\r\nUsage: test <number>\r\n");
 		return;
 	}
-	int next,first=0,second=1,c;
+	int next;
+	int first=0;
+	int second=1;
+	int i;
 	int input=StrToInt(argv[1]);
-fio_printf(1,"\r\n");	
-	for ( c = 0 ; c < input ; c++ )
-	
-   {
-      if ( c <= 1 )
-         next = c;
-      else
-      {
-         next = first + second;
-         first = second;
-         second = next;
-      }
-      fio_printf(1,"%d\r\n",next);
-   }
+	fio_printf(1,"\r\n");	
+	for ( i = 0 ; i < input ; i++ ){
+      		if ( i <= 1 )
+         		next = i;
+      		else{
+         		next = first + second;
+         		first = second;
+         		second = next;
+      			}
+      	fio_printf(1,"%d\r\n",next);
+   	}
  
 			
 }
@@ -221,6 +241,7 @@ void _command(int n, char *argv[]){
     (void)n; (void)argv;
     fio_printf(1, "\r\n");
 }
+
 
 cmdfunc *do_command(const char *cmd){
 
