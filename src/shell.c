@@ -65,25 +65,9 @@ int parse_command(char *str, char *argv[]){
 
 void ls_command(int n, char *argv[]){
     	fio_printf(1,"\r\n"); 
- //save the command to the host
-	int handle;
-	int error;
- 	handle = host_action(SYS_OPEN, "output/syslog", 8);
-    	if(handle == -1) {
-        	fio_printf(1, "Open file error!\n\r");
-        	return;
-   	 }
+ 
 
-    	char *buffer = "use ls command\n";
-    	error = host_action(SYS_WRITE, handle, buffer, strlen(buffer));
-    	if(error != 0) {
-       	 	fio_printf(1, "Write file error! Remain %d bytes didn't write in the file.\n\r", error);
-       	 	host_action(SYS_CLOSE, handle);
-        	return;
-    	}
- //save the command to the host
-
-    	host_action(SYS_CLOSE, handle);
+    	
     	int dir;
     	if(n == 0){
        		 dir = fs_opendir("");
@@ -194,16 +178,20 @@ int StrToInt( char *str)
 void new_command(int n, char *argv[]){
 /* Create a task to mytest1. */
 	if(n==1){
-		fio_printf(2, "\r\nUsage: new <priority>\r\n");
+		fio_printf(2, "\r\nUsage: new <newtaskname> <priority>\r\n");
 		return;
 	}
-	int input=StrToInt(argv[1]);
-	xTaskCreate(mytest1,
-	            (signed portCHAR *) "mytest1",
-	            512 /* stack size */, NULL, tskIDLE_PRIORITY + input, NULL);
-        fio_printf(2, "\r\ncreate new task:mytest1'\r\n");
+	char *name=argv[1];
+	int input=StrToInt(argv[2]);
+	if(xTaskCreate(mytest1,
+	            (signed portCHAR *) name,
+	            512 /* stack size */, NULL, tskIDLE_PRIORITY + input, NULL)!=-1){
+
+        fio_printf(2, "\r\ncreate new task:%s '\r\n",name);}
+else 
+	fio_printf(2, "\r\ncan't create task! '\r\n");
     
-}
+} 
 void help_command(int n,char *argv[]){
 	int i;
 	fio_printf(1, "\r\n");
