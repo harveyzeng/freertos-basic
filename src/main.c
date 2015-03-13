@@ -109,7 +109,7 @@ void command_prompt(void *pvParameters)
 void mytest(void *pvParameters)
 {		
 	for (;;){	
-		vTaskDelay(500);
+		//vTaskDelay(500);
 		}
 }
 
@@ -181,12 +181,12 @@ int main()
 	            512 /* stack size */, NULL, tskIDLE_PRIORITY + 0, NULL);
 	
 
-#if 0
+
 	/* Create a task to record system log. */
 	xTaskCreate(system_logger,
 	            (signed portCHAR *) "Logger",
-	            1024 /* stack size */, NULL, tskIDLE_PRIORITY + 1, NULL);
-#endif
+	            512 /* stack size */, NULL, tskIDLE_PRIORITY + 1, NULL);
+
 
 	/* Start running the tasks. */
 	vTaskStartScheduler();
