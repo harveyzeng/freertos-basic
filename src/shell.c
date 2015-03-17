@@ -14,7 +14,9 @@ typedef struct {
 	cmdfunc *fptr;
 	const char *desc;
 } cmdlist;
-
+xTaskHandle xHandle1;
+xTaskHandle xHandle2;
+xTaskHandle xHandle3;
 void ls_command(int, char **);
 void man_command(int, char **);
 void cat_command(int, char **);
@@ -24,6 +26,7 @@ void help_command(int, char **);
 void host_command(int, char **);
 void mmtest_command(int, char **);
 void test_command(int, char **);
+void tasktest_command(int,char **);
 void _command(int, char **);
 void new_command(int,char**);
 #define MKCL(n, d) {.name=#n, .fptr=n ## _command, .desc=d}
@@ -37,6 +40,7 @@ cmdlist cl[]={
 	MKCL(mmtest, "heap memory allocation test"),
 	MKCL(help, "help"),
 	MKCL(test, "test new function"),
+	MKCL(tasktest,"test  task works"),
 	MKCL(, ""),
 	MKCL(new,"create new task")
 	
@@ -69,12 +73,14 @@ void ls_command(int n, char *argv[]){
 
     	
     	int dir;
-    	if(n == 0){
+    	if(n == 1){
        		 dir = fs_opendir("");
-    	}else if(n == 1){
+		fio_printf(1, "%d\r\n",dir);
+    	}else if(n == 2){
         	dir = fs_opendir(argv[1]);
+	fio_printf(1, "%d\r\n",dir);
         	//if(dir == )
-    	}else{
+    	}else{  dir = fs_opendir(argv[1]);fio_printf(1, "%d\r\n",dir);
         	fio_printf(1, "Too many argument!\r\n");
         return;
     }
@@ -164,6 +170,72 @@ void mytest1(void *pvParameters)
 		vTaskDelay(1000);
 		}
 }
+
+void test1(void *pvParameters)
+{	int next;
+	int first=0;
+	int second=1;
+	int i;	
+	fio_printf(1,"\r\n");	
+	for ( i = 0 ; i < 36 ; i++ ){
+      		if ( i <= 1 )
+         		next = i;
+      		else{
+         		next = first + second;
+         		first = second;
+         		second = next;
+      			}
+      	
+   	}
+fio_printf(1,"\r\ntest 1 finished 36th fibonacci:%d\r\n",next);
+
+vTaskDelete( xHandle1 );
+
+}
+
+void test2(void *pvParameters)
+{	int next;
+	int first=0;
+	int second=1;
+	int i;	
+	fio_printf(1,"\r\n");	
+	for ( i = 0 ; i < 36 ; i++ ){
+      		if ( i <= 1 )
+         		next = i;
+      		else{
+         		next = first + second;
+         		first = second;
+         		second = next;
+      			}
+      	
+   	}
+fio_printf(1,"\r\ntest 2 finished 36th fibonacci:%d\r\n",next);
+
+ vTaskDelete( xHandle2 );
+
+}
+void test3(void *pvParameters)
+{	int next;
+	int first=0;
+	int second=1;
+	int i;	
+	fio_printf(1,"\r\n");	
+	for ( i = 0 ; i < 36 ; i++ ){
+      		if ( i <= 1 )
+         		next = i;
+      		else{
+         		next = first + second;
+         		first = second;
+         		second = next;
+      			}
+      	
+   	}
+fio_printf(1,"\r\ntest 3 finished 36th fibonacci:%d\r\n",next);
+
+ vTaskDelete( xHandle3 );
+
+}
+
 int StrToInt( char *str)
 {
     int n = 0;
@@ -200,6 +272,44 @@ void help_command(int n,char *argv[]){
 	}
 }
 
+void tasktest_command(int n, char *argv[]) {
+   	if(n==1){
+		fio_printf(2, "\r\nUsage: tasktest <task1priority> <task2priority> <task3priority>\r\n");
+return;
+}
+	int task1priority=StrToInt(argv[1]);
+	int task2priority=StrToInt(argv[2]);
+	int task3priority=StrToInt(argv[3]);
+	 // Create the task, storing the handle.
+	 xTaskCreate( test1,(signed portCHAR *)"name", 128, NULL, task1priority, &xHandle1 );
+
+ xTaskCreate( test2, (signed portCHAR *)"name2", 128, NULL, task2priority, &xHandle2 );
+	 
+xTaskCreate( test3,(signed portCHAR *)"name3", 128, NULL, task3priority, &xHandle3 );
+	 
+
+	
+
+			
+}
+
+void _command(int n, char *argv[]){
+    (void)n; (void)argv;
+    fio_printf(1, "\r\n");
+}
+
+
+cmdfunc *do_command(const char *cmd){
+
+	int i;
+
+	for(i=0; i<sizeof(cl)/sizeof(cl[0]); ++i){
+		if(strcmp(cl[i].name, cmd)==0)
+			return cl[i].fptr;
+	}
+	return NULL;	
+}
+
 void test_command(int n, char *argv[]) {
    	if(n==1){
 		fio_printf(2, "\r\nUsage: test <number>\r\n");
@@ -224,22 +334,3 @@ void test_command(int n, char *argv[]) {
  
 			
 }
-
-void _command(int n, char *argv[]){
-    (void)n; (void)argv;
-    fio_printf(1, "\r\n");
-}
-
-
-cmdfunc *do_command(const char *cmd){
-
-	int i;
-
-	for(i=0; i<sizeof(cl)/sizeof(cl[0]); ++i){
-		if(strcmp(cl[i].name, cmd)==0)
-			return cl[i].fptr;
-	}
-	return NULL;	
-}
-
-
