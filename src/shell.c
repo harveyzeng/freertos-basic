@@ -4,7 +4,6 @@
 #include <string.h>
 #include "fio.h"
 #include "filesystem.h"
-
 #include "FreeRTOS.h"
 #include "task.h"
 #include "host.h"
@@ -14,9 +13,9 @@ typedef struct {
 	cmdfunc *fptr;
 	const char *desc;
 } cmdlist;
-xTaskHandle xHandle1;
-xTaskHandle xHandle2;
-xTaskHandle xHandle3;
+static xTaskHandle xHandle1;
+static xTaskHandle xHandle2;
+static xTaskHandle xHandle3;
 void ls_command(int, char **);
 void man_command(int, char **);
 void cat_command(int, char **);
@@ -30,7 +29,8 @@ void tasktest_command(int,char **);
 void _command(int, char **);
 void new_command(int,char**);
 #define MKCL(n, d) {.name=#n, .fptr=n ## _command, .desc=d}
-
+extern int cmdup[50];
+extern int cmduptimes;
 cmdlist cl[]={
 	MKCL(ls, "List directory"),
 	MKCL(man, "Show the manual of the command"),
@@ -305,7 +305,9 @@ cmdfunc *do_command(const char *cmd){
 
 	for(i=0; i<sizeof(cl)/sizeof(cl[0]); ++i){
 		if(strcmp(cl[i].name, cmd)==0)
-			return cl[i].fptr;
+			{cmdup[cmduptimes]=i;
+			  cmduptimes+=1;
+			return cl[i].fptr;}
 	}
 	return NULL;	
 }

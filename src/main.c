@@ -20,9 +20,7 @@
  * it contains file system structure of test_romfs directory
  */
 extern const unsigned char _sromfs;
-
 //static void setup_hardware();
-
 volatile xSemaphoreHandle serial_tx_wait_sem = NULL;
 /* Add for serial input */
 volatile xQueueHandle serial_rx_queue = NULL;
@@ -95,8 +93,8 @@ void command_prompt(void *pvParameters)
                 fio_printf(1, "%s", hint);
 		fio_read(0, buf, 127);
 	
-		int n=parse_command(buf, argv);
-
+		int  n=parse_command(buf, argv);
+		
 		/* will return pointer to the command function */
 		cmdfunc *fptr=do_command(argv[0]);
 		if(fptr!=NULL)

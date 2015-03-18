@@ -7,23 +7,40 @@
 #include "filesystem.h"
 #include "osdebug.h"
 #include "hash-djb2.h"
-
+#include "clib.h"
 static struct fddef_t fio_fds[MAX_FDS];
 
 /* recv_byte is define in main.c */
 char recv_byte();
 void send_byte(char);
-
-enum KeyName{ESC=27, BACKSPACE=127};
-
+enum KeyName{ESC=27, BACKSPACE=127 ,UP=33};
+int cmdup[50];
+int cmduptimes=0;
 /* Imple */
 static ssize_t stdin_read(void * opaque, void * buf, size_t count) {
     int i=0, endofline=0, last_chr_is_esc;
     char *ptrbuf=buf;
     char ch;
+    int currentcmdtimes;
     while(i < count&&endofline!=1){
 	ptrbuf[i]=recv_byte();
+	
+	
 	switch(ptrbuf[i]){
+		case 'A':
+currentcmdtimes=cmduptimes-1;
+if(cmdup[currentcmdtimes]==0){ptrbuf[i]='l';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';}
+else if(cmdup[currentcmdtimes]==1){ptrbuf[i]='m';send_byte(ptrbuf[i]);++i;ptrbuf[i]='a';send_byte(ptrbuf[i]);++i;ptrbuf[i]='n';}
+else if (cmdup[currentcmdtimes]==2){ptrbuf[i]='c';send_byte(ptrbuf[i]);++i;ptrbuf[i]='a';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
+else if (cmdup[currentcmdtimes]==3){ptrbuf[i]='p';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';}
+else if (cmdup[currentcmdtimes]==4){ptrbuf[i]='h';send_byte(ptrbuf[i]);++i;ptrbuf[i]='o';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
+else if (cmdup[currentcmdtimes]==5){ptrbuf[i]='m';send_byte(ptrbuf[i]);++i;ptrbuf[i]='m';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
+else if (cmdup[currentcmdtimes]==6){ptrbuf[i]='h';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='l';send_byte(ptrbuf[i]);++i;ptrbuf[i]='p';}
+else if (cmdup[currentcmdtimes]==7){ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
+else if (cmdup[currentcmdtimes]==8){ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='a';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='k';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
+else if (cmdup[currentcmdtimes]==10){ptrbuf[i]='n';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='w';}
+currentcmdtimes-=1;
+		break;	
 		case '\r':
 		case '\n':
 			ptrbuf[i]='\0';
