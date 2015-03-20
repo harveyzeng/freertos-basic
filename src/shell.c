@@ -71,16 +71,19 @@ void ls_command(int n, char *argv[]){
     	fio_printf(1,"\r\n"); 
  
 
-    	
+    	char path[20]="";
+	strcpy(path, "/romfs/");		
+       
     	int dir;
     	if(n == 1){
-       		 dir = fs_opendir("");
-		fio_printf(1, "%d\r\n",dir);
+       		 dir = fs_opendir(path);
+		
     	}else if(n == 2){
-        	dir = fs_opendir(argv[1]);
-	fio_printf(1, "%d\r\n",dir);
+		 strcat(path, argv[1]) ;
+        	dir = fs_opendir(path);
+	
         	//if(dir == )
-    	}else{  dir = fs_opendir(argv[1]);fio_printf(1, "%d\r\n",dir);
+    	}else{ 
         	fio_printf(1, "Too many argument!\r\n");
         return;
     }
@@ -177,7 +180,7 @@ void test1(void *pvParameters)
 	int second=1;
 	int i;	
 	fio_printf(1,"\r\n");	
-	for ( i = 0 ; i < 36 ; i++ ){
+	for ( i = 0 ; i < 46 ; i++ ){
       		if ( i <= 1 )
          		next = i;
       		else{
@@ -199,7 +202,7 @@ void test2(void *pvParameters)
 	int second=1;
 	int i;	
 	fio_printf(1,"\r\n");	
-	for ( i = 0 ; i < 36 ; i++ ){
+	for ( i = 0 ; i < 46 ; i++ ){
       		if ( i <= 1 )
          		next = i;
       		else{
@@ -220,7 +223,7 @@ void test3(void *pvParameters)
 	int second=1;
 	int i;	
 	fio_printf(1,"\r\n");	
-	for ( i = 0 ; i < 36 ; i++ ){
+	for ( i = 0 ; i < 46 ; i++ ){
       		if ( i <= 1 )
          		next = i;
       		else{

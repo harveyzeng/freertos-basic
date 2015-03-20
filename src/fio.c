@@ -15,7 +15,7 @@ static struct fddef_t fio_fds[MAX_FDS];
 char recv_byte();
 void send_byte(char);
 int parse_commandsend(char *,int);
-enum KeyName{ESC=27, BACKSPACE=127 ,UP=33};
+enum KeyName{ESC=27, BACKSPACE=127 };
 int cmdup[50];
 int cmduptimes=0;
 int currentcmdtimes;
@@ -256,17 +256,19 @@ void register_devfs() {
 
 int parse_commandsend(char *ptrbuf,int i){
 
-if(cmdup[currentcmdtimes]==0){ptrbuf[i]='l';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';}
-else if(cmdup[currentcmdtimes]==1){ptrbuf[i]='m';send_byte(ptrbuf[i]);++i;ptrbuf[i]='a';send_byte(ptrbuf[i]);++i;ptrbuf[i]='n';}
-else if (cmdup[currentcmdtimes]==2){ptrbuf[i]='c';send_byte(ptrbuf[i]);++i;ptrbuf[i]='a';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
-else if (cmdup[currentcmdtimes]==3){ptrbuf[i]='p';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';}
-else if (cmdup[currentcmdtimes]==4){ptrbuf[i]='h';send_byte(ptrbuf[i]);++i;ptrbuf[i]='o';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
-else if (cmdup[currentcmdtimes]==5){ptrbuf[i]='m';send_byte(ptrbuf[i]);++i;ptrbuf[i]='m';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
-else if (cmdup[currentcmdtimes]==6){ptrbuf[i]='h';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='l';send_byte(ptrbuf[i]);++i;ptrbuf[i]='p';}
-else if (cmdup[currentcmdtimes]==7){ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
-else if (cmdup[currentcmdtimes]==8){ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='a';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='k';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';}
-else if (cmdup[currentcmdtimes]==10){ptrbuf[i]='n';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='w';}
-else  {ptrbuf[i]=' ';}
+if(cmdup[currentcmdtimes]==0){ptrbuf[i]='l';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;}
+else if(cmdup[currentcmdtimes]==1){ptrbuf[i]='m';send_byte(ptrbuf[i]);++i;ptrbuf[i]='a';send_byte(ptrbuf[i]);++i;ptrbuf[i]='n';send_byte(ptrbuf[i]);++i;}
+else if (cmdup[currentcmdtimes]==2){ptrbuf[i]='c';send_byte(ptrbuf[i]);++i;ptrbuf[i]='a';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;}
+else if (cmdup[currentcmdtimes]==3){ptrbuf[i]='p';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;}
+else if (cmdup[currentcmdtimes]==4){ptrbuf[i]='h';send_byte(ptrbuf[i]);++i;ptrbuf[i]='o';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;}
+else if (cmdup[currentcmdtimes]==5){ptrbuf[i]='m';send_byte(ptrbuf[i]);++i;ptrbuf[i]='m';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;}
+else if (cmdup[currentcmdtimes]==6){ptrbuf[i]='h';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='l';send_byte(ptrbuf[i]);++i;ptrbuf[i]='p';send_byte(ptrbuf[i]);++i;}
+else if (cmdup[currentcmdtimes]==7){ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;}
+else if (cmdup[currentcmdtimes]==8){ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='a';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='k';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='s';send_byte(ptrbuf[i]);++i;ptrbuf[i]='t';send_byte(ptrbuf[i]);++i;}
+else if (cmdup[currentcmdtimes]==10){ptrbuf[i]='n';send_byte(ptrbuf[i]);++i;ptrbuf[i]='e';send_byte(ptrbuf[i]);++i;ptrbuf[i]='w';send_byte(ptrbuf[i]);++i;}
+else  {ptrbuf[i]=' ';send_byte(ptrbuf[i]);++i;}
+send_byte('\b');
+--i;
 currentcmdtimes-=1;
 return i;
 }

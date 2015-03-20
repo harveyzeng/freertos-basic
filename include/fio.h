@@ -40,5 +40,5 @@ int fio_close(int fd);
 void fio_set_opaque(int fd, void * opaque);
 
 void register_devfs();
-
+ 
 #endif
