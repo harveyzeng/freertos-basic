@@ -178,9 +178,14 @@ void test1(void *pvParameters)
 {	int next;
 	int first=0;
 	int second=1;
-	int i;	
-	fio_printf(1,"\r\n");	
-	for ( i = 0 ; i < 46 ; i++ ){
+	int i;		
+	portTickType xLastWakeTime;
+ 	const portTickType xFrequency = 1;
+	xLastWakeTime = xTaskGetTickCount ();
+	vTaskSuspendAll ();
+	fio_printf(1, "\r\n");	
+	xTaskResumeAll ();
+	for ( i = 0 ; i < 46 ; i++){
       		if ( i <= 1 )
          		next = i;
       		else{
@@ -188,9 +193,14 @@ void test1(void *pvParameters)
          		first = second;
          		second = next;
       			}
-      	
+
+   vTaskDelayUntil( &xLastWakeTime, xFrequency );
+
    	}
+	
+vTaskSuspendAll ();
 fio_printf(1,"\r\ntest 1 finished 36th fibonacci:%d\r\n",next);
+xTaskResumeAll ();
 
 vTaskDelete( xHandle1 );
 
@@ -201,7 +211,12 @@ void test2(void *pvParameters)
 	int first=0;
 	int second=1;
 	int i;	
-	fio_printf(1,"\r\n");	
+	portTickType xLastWakeTime;
+ 	const portTickType xFrequency = 1;
+	xLastWakeTime = xTaskGetTickCount ();	
+	vTaskSuspendAll ();
+	fio_printf(1, "\r\n");	
+	xTaskResumeAll ();
 	for ( i = 0 ; i < 46 ; i++ ){
       		if ( i <= 1 )
          		next = i;
@@ -210,11 +225,12 @@ void test2(void *pvParameters)
          		first = second;
          		second = next;
       			}
-      	
+       vTaskDelayUntil( &xLastWakeTime, xFrequency );
    	}
-fio_printf(1,"\r\ntest 2 finished 36th fibonacci:%d\r\n",next);
-
- vTaskDelete( xHandle2 );
+	vTaskSuspendAll ();
+	fio_printf(1,"\r\ntest 2 finished 36th fibonacci:%d\r\n",next);
+	xTaskResumeAll ();
+ 	vTaskDelete( xHandle2 );
 
 }
 void test3(void *pvParameters)
@@ -222,7 +238,12 @@ void test3(void *pvParameters)
 	int first=0;
 	int second=1;
 	int i;	
-	fio_printf(1,"\r\n");	
+	portTickType xLastWakeTime;
+ 	const portTickType xFrequency = 1;
+	vTaskSuspendAll ();
+	fio_printf(1, "\r\n");	
+	xTaskResumeAll ();
+	xLastWakeTime = xTaskGetTickCount ();	
 	for ( i = 0 ; i < 46 ; i++ ){
       		if ( i <= 1 )
          		next = i;
@@ -231,10 +252,11 @@ void test3(void *pvParameters)
          		first = second;
          		second = next;
       			}
-      	
+      	 vTaskDelayUntil( &xLastWakeTime, xFrequency );
    	}
+vTaskSuspendAll ();
 fio_printf(1,"\r\ntest 3 finished 36th fibonacci:%d\r\n",next);
-
+xTaskResumeAll ();
  vTaskDelete( xHandle3 );
 
 }
@@ -284,11 +306,11 @@ return;
 	int task2priority=StrToInt(argv[2]);
 	int task3priority=StrToInt(argv[3]);
 	 // Create the task, storing the handle.
-	 xTaskCreate( test1,(signed portCHAR *)"name", 128, NULL, task1priority, &xHandle1 );
+	 xTaskCreate( test1,(signed portCHAR *)"test1", 128, NULL, task1priority, &xHandle1 );
 
- xTaskCreate( test2, (signed portCHAR *)"name2", 128, NULL, task2priority, &xHandle2 );
+ xTaskCreate( test2, (signed portCHAR *)"test2", 128, NULL, task2priority, &xHandle2 );
 	 
-xTaskCreate( test3,(signed portCHAR *)"name3", 128, NULL, task3priority, &xHandle3 );
+xTaskCreate( test3,(signed portCHAR *)"test3", 128, NULL, task3priority, &xHandle3 );
 	 
 
 	
